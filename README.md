@@ -1,3 +1,4 @@
+# info
 For the executable file go to "releases".
 
 fun fact:
