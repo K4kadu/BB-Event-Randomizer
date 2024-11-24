@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace EventRandomizer
@@ -423,7 +424,10 @@ namespace EventRandomizer
                 if (propertyBox.SelectedItem.Equals("no properties found"))
                 { outBox("Please provide an event."); return; }
 
-                if (double.Parse(minValueBox.Text.Replace('.', ',')) > double.Parse(maxValueBox.Text.Replace('.', ',')))
+                if (stepSize.Text.Equals("0"))
+                { outBox("Placing an event every 0 beats is not possible."); return; }
+
+                if (double.Parse(minValueBox.Text, CultureInfo.InvariantCulture) > double.Parse(maxValueBox.Text, CultureInfo.InvariantCulture))
                 { outBox("Make sure that the minimum value is not greater than the maximum value."); return; }
 
                 eventOutput = "";
@@ -436,17 +440,17 @@ namespace EventRandomizer
                 if (inputEvent[inputEvent.Length - 1].Equals(','))
                     inputEvent = inputEvent.Substring(0, inputEvent.Length - 1);
 
-                double counter = double.Parse(startingBeat.Text.Replace('.', ','));
-                double threshold = double.Parse(endingBeat.Text.Replace('.', ','));
+                double counter = double.Parse(startingBeat.Text, CultureInfo.InvariantCulture);
+                double threshold = double.Parse(endingBeat.Text, CultureInfo.InvariantCulture);
                 string replaced = "";
-                for (; counter <= threshold; counter = counter + double.Parse(stepSize.Text.Replace('.', ',')))
+                for (; counter <= threshold; counter = counter + double.Parse(stepSize.Text, CultureInfo.InvariantCulture))
                 {
                     try
                     {
                         // Parse min, max, and round values from input
-                        double minValue = double.Parse(minValueBox.Text.Replace('.', ','));
-                        double maxValue = double.Parse(maxValueBox.Text.Replace('.', ','));
-                        double valueRound = double.Parse(roundValueBox.Text.Replace('.', ','));
+                        double minValue = double.Parse(minValueBox.Text, CultureInfo.InvariantCulture);
+                        double maxValue = double.Parse(maxValueBox.Text, CultureInfo.InvariantCulture);
+                        double valueRound = double.Parse(roundValueBox.Text, CultureInfo.InvariantCulture);
 
                         double randomValue = maxValue + 1;
                         while (randomValue > maxValue || randomValue < minValue)
@@ -467,14 +471,14 @@ namespace EventRandomizer
                             // Regex pattern to find "property" and its value
                             string pattern = @$"\""{propertyBox.Text}\"":-?[0-9]*\.?[0-9]+"; // Matches "property": followed by a number
                             // Replacement string with the new value
-                            string replacement = $"\"{propertyBox.Text}\":{randomValue.ToString().Replace(',', '.')}";
+                            string replacement = $"\"{propertyBox.Text}\":{randomValue.ToString(CultureInfo.InvariantCulture)}";
                             // Replace the "property" value in the input string
                             replaced = Regex.Replace(inputEvent, pattern, replacement) + ",\n";
 
                             // Regex pattern to find "time" and its value
                             pattern = @"\""time\"":-?[0-9]*\.?[0-9]+"; // Matches "time": followed by a number
                             // Replacement string with the new value
-                            replacement = $"\"time\":{counter.ToString().Replace(',', '.')}";
+                            replacement = $"\"time\":{counter.ToString(CultureInfo.InvariantCulture)}";
                             // Replace the "time" value in the input string
                             eventOutput = eventOutput + Regex.Replace(replaced, pattern, replacement);
                         }
